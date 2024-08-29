@@ -45,7 +45,7 @@ const search = (info) => {
 };
 
 const single = (id, format) => {
-	const uin = ((headers.cookie || '').match(/wxuin=(\d+)/) || [])[1] || '0';
+	const uin = ((headers.cookie || '').match(/uin=(\d+)/) || [])[1] || '0';
 
 	const url =
 		'https://u.y.qq.com/cgi-bin/musicu.fcg?data=' +
@@ -57,7 +57,7 @@ const single = (id, format) => {
 					param: {
 						guid: (Math.random() * 10000000).toFixed(0),
 						loginflag: 1,
-						filename: format[0] ? [format.join(id.file)] : null,
+						filename: format[0] ? [format.join(id.file).join(id.file)] : null,
 						songmid: [id.song],
 						songtype: [0],
 						uin,
