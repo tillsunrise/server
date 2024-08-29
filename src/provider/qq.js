@@ -45,7 +45,7 @@ const search = (info) => {
 };
 
 const single = (id, format) => {
-	const uin = ((headers.cookie || '').match(/uin=(\d+)/) || [])[1] || '0';
+	const uin = ((headers.cookie || '').match(/wxuin=(\d+)/) || [])[1] || '0';
 
 	const url =
 		'https://u.y.qq.com/cgi-bin/musicu.fcg?data=' +
