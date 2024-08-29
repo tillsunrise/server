@@ -57,7 +57,7 @@ const single = (id, format) => {
 					param: {
 						guid: (Math.random() * 10000000).toFixed(0),
 						loginflag: 1,
-						filename: format[0] ? [format.join(id.file).join(id.file)] : null,
+						filename: format[0] ? [format.join(id.file + id.file)] : null,
 						songmid: [id.song],
 						songtype: [0],
 						uin,
