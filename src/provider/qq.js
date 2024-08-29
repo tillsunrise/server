@@ -78,11 +78,12 @@ const single = (id, format) => {
 				range: 'bytes=0-8191',
 				'accept-encoding': 'identity',
 			};
-			return request('GET', playurl, header).then((response) => {
-				if (response.statusCode < 200 || response.statusCode > 299)
-					return Promise.reject();
-				else return playurl;
-			});
+			// return request('GET', playurl, header).then((response) => {
+			// 	if (response.statusCode < 200 || response.statusCode > 299)
+			// 		return Promise.reject();
+			// 	else return playurl;
+			// });
+			return playurl;
 		});
 };
 
