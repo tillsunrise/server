@@ -16,8 +16,6 @@ const { spawnStdout } = require('../spawn');
  * @param {string} query
  */
 const dlArguments = (query) => ['-f', '140', '--dump-json', query];
-/** @param {string} id */
-const byId = (id) => `https://www.youtube.com/watch?v=${id}`;
 /** @param {string} keyword */
 const byKeyword = (keyword) => `ytsearch1:${keyword}`;
 const logger = logScope('provider/youtube-dl');
@@ -47,24 +45,18 @@ async function getUrl(args) {
 	}
 }
 
-const search = async (info) => {
-	const { id } = await getUrl(dlArguments(byKeyword(info.keyword)));
-	return id;
-};
-
-const track = async (id) => {
-	const { url } = await getUrl(dlArguments(byId(id)));
+const track = async (info) => {
+	const { url } = await getUrl(dlArguments(byKeyword(info.keyword)));
 	return url;
 };
 
 const cs = getManagedCacheStorage('youtube-dl');
 const check = (info) =>
 	cs
-		.cache(info, () => search(info))
-		.then(track)
+		.cache(info, () => track(info))
 		.catch((e) => {
 			if (e) logger.error(e);
 			throw e;
 		});
 
-module.exports = { check, track };
+module.exports = { check };
