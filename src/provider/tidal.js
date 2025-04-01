@@ -4,7 +4,8 @@ const request = require('../request');
 const { getManagedCacheStorage } = require('../cache');
 
 const search = (info) => {
-	const keyword = encodeURIComponent(info.keyword.replace(' - ', ' '));
+	// const keyword = encodeURIComponent(info.keyword.replace(' - ', ' '));
+	const keyword = encodeURIComponent(info.name);
 	const url = `https://music-api.gdstudio.xyz/api.php?types=search&source=tidal&name=${keyword}&count=20&pages=1`;
 
 	return request('GET', url)
