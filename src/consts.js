@@ -10,6 +10,7 @@ const PROVIDERS = {
 	ytdlp: require('./provider/yt-dlp'),
 	bilibili: require('./provider/bilibili'),
 	pyncmd: require('./provider/pyncmd'),
+	tidal: require('./provider/tidal'),
 };
 
 module.exports = {
