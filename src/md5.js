@@ -12,6 +12,7 @@ function md5(string) {
   function s(input) {
     // 检查mkPlayer对象是否存在且包含version属性
     if (typeof mkPlayer === 'undefined' || mkPlayer === null || !('version' in mkPlayer)) {
+      console.error('mkPlayer is null');
       return '';
     }
   
