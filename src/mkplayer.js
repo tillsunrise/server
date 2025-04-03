@@ -11,30 +11,17 @@ async function initializeMkPlayer() {
             
             res.on('end', () => {
                 try {
-                    // 创建一个模拟的document对象
-                    global.document = {
-                        createElement: () => ({
-                            src: '',
-                            addEventListener: () => {}
-                        })
+                    // 使用正则表达式提取version属性
+                    const versionMatch = data.match(/version[\s]*:[\s]*['"]([^'"]+)['"]/);
+                    if (!versionMatch) {
+                        throw new Error('Could not find version in player.js');
+                    }
+
+                    // 创建mkPlayer对象
+                    global.mkPlayer = {
+                        version: versionMatch[1]
                     };
-                    
-                    // 执行获取到的JavaScript代码来初始化mkPlayer
-                    eval(data);
-                    
-                    // 清理模拟的document对象
-                    delete global.document;
-                    
-                    // 检查mkPlayer是否成功初始化
-                    if (typeof global.mkPlayer === 'undefined' && typeof mkPlayer !== 'undefined') {
-                        global.mkPlayer = mkPlayer;
-                        console.log('mkPlayer:',global.mkPlayer);
-                    }
-                    
-                    if (typeof global.mkPlayer === 'undefined') {
-                        throw new Error('mkPlayer initialization failed');
-                    }
-                    
+                    console.log(global.mkPlayer)
                     resolve();
                 } catch (error) {
                     reject(new Error('Failed to initialize mkPlayer: ' + error.message));
