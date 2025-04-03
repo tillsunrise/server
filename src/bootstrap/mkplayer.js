@@ -28,6 +28,7 @@ async function initializeMkPlayer() {
                     // 检查mkPlayer是否成功初始化
                     if (typeof global.mkPlayer === 'undefined' && typeof mkPlayer !== 'undefined') {
                         global.mkPlayer = mkPlayer;
+                        console.log('mkPlayer:',global.mkPlayer);
                     }
                     
                     if (typeof global.mkPlayer === 'undefined') {
