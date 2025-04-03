@@ -1,4 +1,11 @@
 const packageJson = require('../package.json');
+const initializeMkPlayer = require('./mkplayer.js');
+
+// Initialize mkPlayer
+initializeMkPlayer().catch((error) => {
+	console.error('Warning: Failed to initialize mkPlayer:', error.message);
+});
+
 const config = require('./cli.js')
 	.program({
 		name: packageJson.name.replace(/@.+\//, ''),

@@ -2,7 +2,6 @@
 
 const { loadDotenv } = require('../dotenv.js');
 const devMessage = require('./message');
-const initializeMkPlayer = require('./mkplayer');
 
 /**
  * Start the main part.
@@ -13,13 +12,6 @@ const initializeMkPlayer = require('./mkplayer');
 async function startApp(mainEntry) {
 	// Inject the `.env` file into the `process.env` object.
 	await loadDotenv();
-
-	// Initialize mkPlayer
-	try {
-		await initializeMkPlayer();
-	} catch (error) {
-		console.error('Warning: Failed to initialize mkPlayer:', error.message);
-	}
 
 	if (process.env.DEVELOPMENT === 'true') {
 		console.warn(devMessage);
