@@ -6,7 +6,6 @@ RUN apk add --no-cache python3 youtube-dl \
     && chmod a+rx /usr/local/bin/yt-dlp
 
 COPY ./precompiled/* /app/
-COPY ./src/bootstrap /app/bootstrap
 COPY ./*.crt /app/
 COPY ./*.key /app/
 

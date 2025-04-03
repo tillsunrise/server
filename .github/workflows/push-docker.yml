@@ -3,7 +3,7 @@ name: Docker Image CI
 on:
   push:
     branches: [ "enhanced" ]
-    paths: [ "precompiled/**", "src/bootstrap/**" ]
+    paths: [ "precompiled/**" ]
 
 jobs:
 
