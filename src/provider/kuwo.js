@@ -19,29 +19,31 @@ const format = (song) => ({
 
 const search = (info) => {
 	// const keyword = encodeURIComponent(info.keyword.replace(' - ', ' '));
-	// const url = `http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key=${keyword}&pn=1&rn=30`;
-	// const cookie = process.env.KUWO_COOKIE || null;
+	// const url =
+	// 	'http://search.kuwo.cn/r.s?&correct=1&stype=comprehensive&encoding=utf8' +
+	// 	'&rformat=json&mobi=1&show_copyright_off=1&searchapi=6&all=' +
+	// 	keyword;
 
-	// return request('GET', url, {
-	// 	referer: `http://www.kuwo.cn/search/list?key=${keyword}`,
-	// 	secret: cookie
-	// 		? (cookie.match(/Secret=([0-9a-f]{72})/) || [])[1]
-	// 		: null,
-	// 	cookie,
-	// })
+	// return request('GET', url)
 	// 	.then((response) => response.json())
 	// 	.then((jsonBody) => {
-	// 		if (!jsonBody || jsonBody.code !== 200 || jsonBody.data.total < 1)
+	// 		if (
+	// 			!jsonBody ||
+	// 			jsonBody.content.length < 2 ||
+	// 			!jsonBody.content[1].musicpage ||
+	// 			jsonBody.content[1].musicpage.abslist.length < 1
+	// 		)
 	// 			return Promise.reject();
-	// 		const list = jsonBody.data.list.map(format);
+	// 		const list = jsonBody.content[1].musicpage.abslist.map(format);
 	// 		const matched = select(list, info);
 	// 		return matched ? matched.id : Promise.reject();
 	// 	});
 
 	const keyword = encodeURIComponent(info.keyword.replace(' - ', ' '));
 	const url =
-		'http://search.kuwo.cn/r.s?&correct=1&stype=comprehensive&encoding=utf8' +
-		'&rformat=json&mobi=1&show_copyright_off=1&searchapi=6&all=' +
+		'http://search.kuwo.cn/r.s?&vipver=1&client=kt&ft=music&cluster=0&strategy=2012' +
+		'&encoding=utf8&rformat=json&mobi=1' + 
+		'&issubtitle=1&show_copyright_off=1&pn=0&rn=20&all=' +
 		keyword;
 
 	return request('GET', url)
@@ -49,12 +51,10 @@ const search = (info) => {
 		.then((jsonBody) => {
 			if (
 				!jsonBody ||
-				jsonBody.content.length < 2 ||
-				!jsonBody.content[1].musicpage ||
-				jsonBody.content[1].musicpage.abslist.length < 1
+				jsonBody.abslist.length < 1
 			)
 				return Promise.reject();
-			const list = jsonBody.content[1].musicpage.abslist.map(format);
+			const list = jsonBody.abslist.map(format);
 			const matched = select(list, info);
 			return matched ? matched.id : Promise.reject();
 		});
