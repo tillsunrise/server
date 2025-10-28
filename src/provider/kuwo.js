@@ -83,11 +83,11 @@ const search = (info) => {
 // 		.catch(() => insure().kuwo.track(id));
 // };
 
-const track = (info) => {
+const track = (id) => {
 	// Credit: This API is provided by GD studio (music.gdstudio.xyz).
 	const url =
 		'https://music-api.gdstudio.xyz/api.php?types=url&source=kuwo&id=' +
-		info.id +
+		id +
 		'&br=' +
 		['999', '320'].slice(
 			select.ENABLE_FLAC ? 0 : 1,
