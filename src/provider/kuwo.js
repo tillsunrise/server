@@ -59,28 +59,52 @@ const search = (info) => {
 		});
 };
 
-const track = (id) => {
-	const url = crypto.kuwoapi
-		? 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' +
-			crypto.kuwoapi.encryptQuery(
-				'user=0&corp=kuwo&source=kwplayer_ar_5.1.0.0_B_jiakong_vh.apk&p2p=1&type=convert_url2&sig=0&format=' +
-					['flac', 'mp3']
-						.slice(select.ENABLE_FLAC ? 0 : 1)
-						.join('|') +
-					'&rid=' +
-					id
-			)
-		: 'http://antiserver.kuwo.cn/anti.s?type=convert_url&format=mp3&response=url&rid=MUSIC_' +
-			id; // flac refuse
-	// : 'http://www.kuwo.cn/url?format=mp3&response=url&type=convert_url3&br=320kmp3&rid=' + id // flac refuse
+// const track = (id) => {
+// 	const url = crypto.kuwoapi
+// 		? 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' +
+// 			crypto.kuwoapi.encryptQuery(
+// 				'user=0&corp=kuwo&source=kwplayer_ar_5.1.0.0_B_jiakong_vh.apk&p2p=1&type=convert_url2&sig=0&format=' +
+// 					['flac', 'mp3']
+// 						.slice(select.ENABLE_FLAC ? 0 : 1)
+// 						.join('|') +
+// 					'&rid=' +
+// 					id
+// 			)
+// 		: 'http://antiserver.kuwo.cn/anti.s?type=convert_url&format=mp3&response=url&rid=MUSIC_' +
+// 			id; // flac refuse
+// 	// : 'http://www.kuwo.cn/url?format=mp3&response=url&type=convert_url3&br=320kmp3&rid=' + id // flac refuse
 
-	return request('GET', url, { 'user-agent': 'okhttp/3.10.0' })
-		.then((response) => response.body())
-		.then((body) => {
-			const url = (body.match(/http[^\s$"]+/) || [])[0];
-			return url || Promise.reject();
-		})
-		.catch(() => insure().kuwo.track(id));
+// 	return request('GET', url, { 'user-agent': 'okhttp/3.10.0' })
+// 		.then((response) => response.body())
+// 		.then((body) => {
+// 			const url = (body.match(/http[^\s$"]+/) || [])[0];
+// 			return url || Promise.reject();
+// 		})
+// 		.catch(() => insure().kuwo.track(id));
+// };
+
+const track = (info) => {
+	// Credit: This API is provided by GD studio (music.gdstudio.xyz).
+	const url =
+		'https://music-api.gdstudio.xyz/api.php?types=url&source=kuwo&id=' +
+		info.id +
+		'&br=' +
+		['999', '320'].slice(
+			select.ENABLE_FLAC ? 0 : 1,
+			select.ENABLE_FLAC ? 1 : 2
+		);
+	return request('GET', url)
+		.then((response) => response.json())
+		.then((jsonBody) => {
+			if (
+				jsonBody &&
+				typeof jsonBody === 'object' &&
+				(!'url') in jsonBody
+			)
+				return Promise.reject();
+
+			return jsonBody.br > 0 ? jsonBody.url : Promise.reject();
+		});
 };
 
 const cs = getManagedCacheStorage('provider/kuwo');
