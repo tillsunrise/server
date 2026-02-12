@@ -10,18 +10,19 @@ const track = (info) => {
 		types: 'url',
 		source: 'netease',
 		id: info.id,
-		br: br
+		br: br,
 	});
 	const url = `https://music-api.gdstudio.xyz/api.php?${params.toString()}`;
 
 	// ===== 核心修改2：给request添加浏览器请求头（解决443关键）=====
 	const requestOptions = {
 		headers: {
-			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-			'Accept': 'application/json, text/plain, */*'
+			'User-Agent':
+				'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+			Accept: 'application/json, text/plain, */*',
 		},
 		// 可选：禁用代理（如果有代理导致443，和Python的trust_env=false对应）
-		proxy: false
+		proxy: false,
 	};
 
 	// ===== 调用request并修复逻辑BUG =====
@@ -36,7 +37,9 @@ const track = (info) => {
 			)
 				return Promise.reject(new Error('返回结果无有效url字段'));
 
-			return jsonBody.br > 0 ? jsonBody.url : Promise.reject(new Error('音质参数无效'));
+			return jsonBody.br > 0
+				? jsonBody.url
+				: Promise.reject(new Error('音质参数无效'));
 		});
 };
 
