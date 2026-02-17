@@ -1,7 +1,8 @@
 const insure = require('./insure');
 const select = require('./select');
 const crypto = require('../crypto');
-const request = require('../request');
+const request = require('../request'); // 保留 request，给 search 用
+const cloudscraper = require('cloudscraper'); // 新增引入 cloudscraper
 const { getManagedCacheStorage } = require('../cache');
 
 const format = (song) => ({
@@ -17,32 +18,13 @@ const format = (song) => ({
 });
 
 const search = (info) => {
-	// const keyword = encodeURIComponent(info.keyword.replace(' - ', ' '));
-	// const url = `http://www.kuwo.cn/api/www/search/searchMusicBykeyWord?key=${keyword}&pn=1&rn=30`;
-	// const cookie = process.env.KUWO_COOKIE || null;
-
-	// return request('GET', url, {
-	// 	referer: `http://www.kuwo.cn/search/list?key=${keyword}`,
-	// 	secret: cookie
-	// 		? (cookie.match(/Secret=([0-9a-f]{72})/) || [])[1]
-	// 		: null,
-	// 	cookie,
-	// })
-	// 	.then((response) => response.json())
-	// 	.then((jsonBody) => {
-	// 		if (!jsonBody || jsonBody.code !== 200 || jsonBody.data.total < 1)
-	// 			return Promise.reject();
-	// 		const list = jsonBody.data.list.map(format);
-	// 		const matched = select(list, info);
-	// 		return matched ? matched.id : Promise.reject();
-	// 	});
-
 	const keyword = encodeURIComponent(info.keyword.replace(' - ', ' '));
 	const url =
 		'http://search.kuwo.cn/r.s?&correct=1&vipver=1&stype=comprehensive&encoding=utf8' +
 		'&rformat=json&mobi=1&show_copyright_off=1&searchapi=6&all=' +
 		keyword;
 
+	// search 函数继续使用原本的 request
 	return request('GET', url)
 		.then((response) => response.json())
 		.then((jsonBody) => {
@@ -60,27 +42,42 @@ const search = (info) => {
 };
 
 const track = (id) => {
-	const url = crypto.kuwoapi
-		? 'http://mobi.kuwo.cn/mobi.s?f=kuwo&q=' +
-			crypto.kuwoapi.encryptQuery(
-				'user=0&corp=kuwo&source=kwplayer_ar_5.1.0.0_B_jiakong_vh.apk&p2p=1&type=convert_url2&sig=0&format=' +
-					['flac', 'mp3']
-						.slice(select.ENABLE_FLAC ? 0 : 1)
-						.join('|') +
-					'&rid=' +
-					id
-			)
-		: 'http://antiserver.kuwo.cn/anti.s?type=convert_url&format=mp3&response=url&rid=MUSIC_' +
-			id; // flac refuse
-	// : 'http://www.kuwo.cn/url?format=mp3&response=url&type=convert_url3&br=320kmp3&rid=' + id // flac refuse
+	// Credit: This API is provided by GD studio (music.gdstudio.xyz).
+	const url =
+		'https://music-api.gdstudio.xyz/api.php?types=url&source=kuwo&id=' +
+		id +
+		'&br=' +
+		['999', '320'].slice(
+			select.ENABLE_FLAC ? 0 : 1,
+			select.ENABLE_FLAC ? 1 : 2
+		);
 
-	return request('GET', url, { 'user-agent': 'okhttp/3.10.0' })
-		.then((response) => response.body())
-		.then((body) => {
-			const url = (body.match(/http[^\s$"]+/) || [])[0];
-			return url || Promise.reject();
+	// 配置 cloudscraper
+	const options = {
+		uri: url,
+		json: true,
+		headers: {
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+			'Accept': 'application/json, text/plain, */*',
+			'Referer': 'https://music-api.gdstudio.xyz/'
+		}
+	};
+
+	return cloudscraper(options)
+		.then((jsonBody) => {
+			if (
+				jsonBody &&
+				typeof jsonBody === 'object' &&
+				(!'url') in jsonBody
+			)
+				return Promise.reject();
+
+			return jsonBody.br > 0 ? jsonBody.url : Promise.reject();
 		})
-		.catch(() => insure().kuwo.track(id));
+		.catch((err) => {
+			console.error(`[GDStudio Kuwo Error] ID: ${id}`, err.message || err);
+			return Promise.reject(err);
+		});
 };
 
 const cs = getManagedCacheStorage('provider/kuwo');
