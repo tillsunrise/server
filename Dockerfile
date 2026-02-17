@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:20-alpine
 
 RUN set -ex && mkdir /app
 RUN apk add --no-cache python3 youtube-dl \
