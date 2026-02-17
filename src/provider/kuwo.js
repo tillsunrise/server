@@ -57,10 +57,11 @@ const track = (id) => {
 		uri: url,
 		json: true,
 		headers: {
-			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-			'Accept': 'application/json, text/plain, */*',
-			'Referer': 'https://music-api.gdstudio.xyz/'
-		}
+			'User-Agent':
+				'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+			Accept: 'application/json, text/plain, */*',
+			Referer: 'https://music-api.gdstudio.xyz/',
+		},
 	};
 
 	return cloudscraper(options)
@@ -75,7 +76,10 @@ const track = (id) => {
 			return jsonBody.br > 0 ? jsonBody.url : Promise.reject();
 		})
 		.catch((err) => {
-			console.error(`[GDStudio Kuwo Error] ID: ${id}`, err.message || err);
+			console.error(
+				`[GDStudio Kuwo Error] ID: ${id}`,
+				err.message || err
+			);
 			return Promise.reject(err);
 		});
 };
